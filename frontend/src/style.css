@@ -1,0 +1,124 @@
+/**
+ * 全局样式表
+ * 包含基础重置、滚动条美化、图表卡片、登录页等公共样式。
+ */
+
+/* 基础重置，统一不同浏览器的默认行为 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body, #app {
+  height: 100%;
+  width: 100%;
+  font-family: "Helvetica Neue", Helvetica, "PingFang SC", "Hiragino Sans GB",
+    "Microsoft YaHei", "微软雅黑", Arial, sans-serif;
+  background: #f0f2f5;
+  color: #333;
+}
+
+/* 细一点的滚动条，默认的太粗了 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: #c0c4cc;
+  border-radius: 3px;
+}
+
+/* 图表卡片：每个图表外层包一个白色卡片，带圆角和轻微阴影 */
+.chart-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.chart-card .chart-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #303133;
+  margin-bottom: 12px;
+  padding-left: 10px;
+  border-left: 3px solid #409eff;
+}
+.chart-container {
+  width: 100%;
+  height: 380px;
+}
+
+/* 概览统计卡片（首页顶部） */
+.overview-card {
+  text-align: center;
+  cursor: default;
+}
+.overview-card .stat-value {
+  font-size: 28px;
+  font-weight: 700;
+  color: #409eff;
+  line-height: 1.4;
+}
+.overview-card .stat-label {
+  font-size: 13px;
+  color: #909399;
+  margin-top: 4px;
+}
+
+/* 通用页面容器和顶部标题栏 */
+.page-container {
+  padding: 20px;
+}
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+.page-header h2 {
+  font-size: 20px;
+  font-weight: 600;
+  color: #303133;
+}
+
+/* 登录页：居中卡片 + 渐变背景 */
+.login-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+.login-card {
+  width: 420px;
+  padding: 40px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+.login-title {
+  text-align: center;
+  font-size: 22px;
+  font-weight: 700;
+  color: #303133;
+  margin-bottom: 8px;
+}
+.login-subtitle {
+  text-align: center;
+  font-size: 13px;
+  color: #909399;
+  margin-bottom: 30px;
+}
+
+/* 路由切换时的淡入淡出动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+

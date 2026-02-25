@@ -1,0 +1,46 @@
+# ===================================================
+# 深圳市路段交通运行速度 Web 可视化分析系统 - Python 依赖
+# ===================================================
+
+# ----- Web 框架 -----
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+
+# ----- 数据库 -----
+sqlalchemy==2.0.36
+pymysql==1.1.1
+cryptography==44.0.0
+alembic==1.14.1
+
+# ----- 数据处理 -----
+pandas==2.2.3
+numpy==1.26.4
+
+# ----- HTTP 请求与重试 -----
+httpx==0.28.1
+tenacity==9.0.0
+
+# ----- 认证与安全 -----
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+bcrypt>=4.0,<4.1
+python-multipart==0.0.20
+
+# ----- 配置管理 -----
+python-dotenv==1.0.1
+pydantic-settings==2.7.1
+
+# ----- Redis (可选缓存) -----
+redis==5.2.1
+
+# ----- 日志 -----
+loguru==0.7.3
+
+# ----- 开发工具 -----
+pytest==8.3.4
+pytest-asyncio==0.25.0
+black==24.10.0
+flake8==7.1.1
+
+# ----- 时区 -----
+pytz==2024.2
