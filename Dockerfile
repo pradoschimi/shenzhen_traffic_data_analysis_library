@@ -42,7 +42,7 @@ WORKDIR /app
 
 # ---------- Python 依赖（单独一层，利用缓存） ----------
 COPY requirements.txt /app/requirements.txt
-RUN pip3 install --no-cache-dir -r /app/requirements.txt
+RUN pip3 install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r /app/requirements.txt
 
 # ---------- 复制应用代码 ----------
 COPY backend/  /app/backend/

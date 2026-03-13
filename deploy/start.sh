@@ -1,13 +1,6 @@
 #!/bin/bash
 # ===================================================
-# 容器启动入口脚本（从零重写版）
-#
-# 核心思路：
-#   mysqld --initialize-insecure 会创建一个【空密码】的 root 用户。
-#   所以我们根本不需要 --skip-grant-tables ！
-#   直接正常启动 MySQL，用空密码 root 通过 localhost（socket）执行全部初始化。
-#
-# 启动顺序：MySQL → 数据库初始化 → Redis → 数据采集 → FastAPI
+# 容器启动入口脚本
 # ===================================================
 
 echo "========================================"
@@ -137,7 +130,7 @@ else
     echo "[启动] 数据库已有 $RECORD_COUNT 条记录，跳过采集"
 fi
 
-# ==================== 5. 启动 FastAPI（前台，PID 1） ====================
+# ==================== 5. 启动 FastAPI 并接管生命周期 ====================
 echo "========================================"
 echo " 所有服务启动完成！"
 echo " Web 界面: http://localhost:${APP_PORT}"
@@ -147,8 +140,43 @@ echo "========================================"
 UVICORN_LOG_LEVEL=$(echo "$APP_LOG_LEVEL" | tr '[:upper:]' '[:lower:]')
 
 cd /app
-exec python3 -m uvicorn backend.app.main:app \
+
+# 1. 以后台模式启动 FastAPI，保存 PID
+python3 -m uvicorn backend.app.main:app \
     --host "$APP_HOST" \
     --port "$APP_PORT" \
     --workers 2 \
-    --log-level "$UVICORN_LOG_LEVEL"
+    --log-level "$UVICORN_LOG_LEVEL" &
+UVICORN_PID=$!
+
+# 2. 定义优雅关机函数
+shutdown_handler() {
+    echo ""
+    echo "[系统] 收到容器停止信号 (SIGTERM/SIGINT)，开始优雅关闭服务..."
+    
+    # 步骤 A：停止 FastAPI，拒绝新请求
+    echo "[关闭] 正在停止 FastAPI..."
+    kill -TERM "$UVICORN_PID" 2>/dev/null
+    wait "$UVICORN_PID" 2>/dev/null
+    
+    # 步骤 B：停止 Redis
+    if command -v redis-cli &>/dev/null; then
+        echo "[关闭] 正在停止 Redis..."
+        redis-cli -p "$REDIS_PORT" shutdown 2>/dev/null
+    fi
+
+    # 步骤 C：停止 MySQL，释放底层文件锁并刷盘
+    echo "[关闭] 正在停止 MySQL，等待 InnoDB 安全退出并释放锁..."
+    kill -TERM "$MYSQL_PID" 2>/dev/null
+    wait "$MYSQL_PID" 2>/dev/null
+    
+    echo "[系统] 所有服务已安全退出，容器平稳停止。"
+    exit 0
+}
+
+# 3. 捕获 Docker 发出的停止信号
+trap shutdown_handler SIGTERM SIGINT
+
+# 4. 保持脚本存活，并等待核心业务进程。
+# 当执行 docker stop 时，这里会被打断并去执行 shutdown_handler
+wait "$UVICORN_PID"
